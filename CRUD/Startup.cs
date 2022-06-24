@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using CRUD.Models;
 
 namespace CRUD
 {
@@ -31,7 +32,7 @@ namespace CRUD
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -55,6 +56,33 @@ namespace CRUD
             {
                 endpoints.MapRazorPages();
             });
+
+            CreateBuiltInData(serviceProvider).Wait();
+        }
+
+        private async Task CreateBuiltInData(IServiceProvider serviceProvider)
+        {
+            try
+            {
+                //Default RoleTypes Add
+                var _context = serviceProvider.GetRequiredService<ApplicationDbContext>();
+                _context.Database.EnsureCreated();
+
+                if (!_context.RoleType.Any())
+                {
+                    _context.RoleType.Add(new RoleType { Name = "Director", Active = true });
+                    _context.RoleType.Add(new RoleType { Name = "Manager", Active = true });
+                    _context.RoleType.Add(new RoleType { Name = "Supervisor", Active = true });
+                    _context.RoleType.Add(new RoleType { Name = "Agent", Active = true });
+
+                    await _context.SaveChangesAsync();
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }
