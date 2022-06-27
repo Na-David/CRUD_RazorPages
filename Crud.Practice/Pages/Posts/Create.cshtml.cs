@@ -21,7 +21,7 @@ namespace Crud.Practice.Pages.Posts
 
         public IActionResult OnGet()
         {
-        ViewData["BlogId"] = new SelectList(_context.Blog, "Id", "Id");
+        ViewData["BlogId"] = new SelectList(_context.Blog, "Id", "Name");
             return Page();
         }
 
